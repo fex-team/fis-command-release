@@ -1,0 +1,23 @@
+{
+    "name" : "fis-command-release",
+    "description" : "fis release command.",
+    "version" : "0.3.4",
+    "author" : "FIS Team <fis@baidu.com>",
+    "homepage" : "http://fis.baidu.com/",
+    "keywords": [ "fis" ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/fouber/fis-command-release.git"
+    },
+    "engines" : {
+        "node" : ">= 0.8.0"
+    },
+    "main" : "release.js",
+    "scripts" : {
+        "test" : "mocha test/ut --recursive"
+    },
+    "dependencies" : {
+        "chokidar" : "0.6.2"
+    },
+    "devDependencies": {}
+}
