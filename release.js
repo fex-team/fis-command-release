@@ -82,10 +82,15 @@ exports.register = function(commander, fis){
         
         //release
         fis.release(opt, function(ret){
-            process.stdout.write('\n');
-            fis.util.map(ret.pkg, collection, true);
-            deploy(opt.dest, opt.md5, collection, fis);
-            collection = {};
+            for(var item in collection){
+                if(collection.hasOwnProperty(item)){
+                    process.stdout.write('\n');
+                    fis.util.map(ret.pkg, collection, true);
+                    deploy(opt.dest, opt.md5, collection, fis);
+                    collection = {};
+                    return;
+                }
+            }
         });
     }
     
