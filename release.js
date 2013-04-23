@@ -11,18 +11,6 @@ exports.register = function(commander, fis){
     
     function watch(opt){
         var root = fis.project.getProjectPath();
-        var isWin = fis.util.isWin();
-        var ignored = [];
-        [ 'output', fis.project.conf.substring(root.length + 1) ].forEach(function(pattern){
-            pattern = isWin ? pattern.replace(/\//g, '\\') : pattern;
-            ignored.push('^' + fis.util.escapeReg(pattern) + '\b');
-        });
-        if(isWin){
-            ignored.push(fis.util.escapeReg('\\.'));
-        } else {
-            ignored.push(fis.util.escapeReg('/.'));
-        }
-        ignored = new RegExp(ignored.join('|'), 'i');
         var timer = -1;
         var safePathReg = /^[:\\\/ _\-.\w]+$/i;
         function listener(path){
@@ -106,40 +94,39 @@ exports.register = function(commander, fis){
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             var cwd = fis.util.realpath(process.cwd()),
-                filename = fis.config.get('system.conf', fis.project.DEFAULT_CONF_FILE),
+                filename = fis.project.conf,
                 pos = cwd.length, conf;
             do {
                 cwd  = cwd.substring(0, pos);
                 conf = cwd + '/' + filename;
                 if(fis.util.exists(conf)){
+                    //init project
+                    fis.project.setProjectRoot(cwd);
                     //merge standard conf
                     fis.config.merge(fis.util.readJSON(__dirname + '/standard.json'));
-                    //init project
-                    fis.project.init(cwd, conf, function(){
-                        
-                        //configure log
-                        fis.log.level = options.debug ? fis.log.L_ALL : fis.log.level;
-                        fis.log.throw = true;
-                        
-                        //compile setup
-                        var tmp = fis.compile.setup({
-                            debug    : options.debug,
-                            optimize : options.optimize,
-                            lint     : options.lint,
-                            hash     : options.md5 > 0,
-                            domain   : options.domain
-                        });
-                        
-                        if(options.clean){
-                            fis.cache.clean(tmp);
-                        }
-                        
-                        if(options.watch){
-                            watch(options);
-                        } else {
-                            release(options);
-                        }
+                    //merge user conf
+                    fis.config.merge(fis.util.readJSON(conf));
+                    //configure log
+                    fis.log.level = options.debug ? fis.log.L_ALL : fis.log.level;
+                    fis.log.throw = true;
+                    //compile setup
+                    var tmp = fis.compile.setup({
+                        debug    : options.debug,
+                        optimize : options.optimize,
+                        lint     : options.lint,
+                        hash     : options.md5 > 0,
+                        domain   : options.domain
                     });
+                    
+                    if(options.clean){
+                        fis.cache.clean(tmp);
+                    }
+                    
+                    if(options.watch){
+                        watch(options);
+                    } else {
+                        release(options);
+                    }
                     return;
                 }
             } while(pos > 0);
