@@ -7,7 +7,7 @@
 
 exports.name = 'release';
 exports.desc = 'build and deploy your project';
-exports.register = function(commander, fis){
+exports.register = function(commander){
     
     function watch(opt){
         var root = fis.project.getProjectPath();
@@ -74,7 +74,7 @@ exports.register = function(commander, fis){
                 if(collection.hasOwnProperty(item)){
                     process.stdout.write('\n');
                     fis.util.map(ret.pkg, collection, true);
-                    deploy(opt.dest, opt.md5, collection, fis);
+                    deploy(opt.dest, opt.md5, collection);
                     collection = {};
                     return;
                 }
