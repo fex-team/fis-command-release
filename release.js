@@ -93,43 +93,54 @@ exports.register = function(commander){
         .option('--pack', 'with package', Boolean, true)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
-            var cwd = fis.util.realpath(process.cwd()),
+            //try to find fis-conf.js
+            var root = fis.util.realpath(process.cwd()),
+                cwd = root,
                 filename = fis.project.conf,
                 pos = cwd.length, conf;
             do {
                 cwd  = cwd.substring(0, pos);
                 conf = cwd + '/' + filename;
                 if(fis.util.exists(conf)){
-                    //init project
-                    fis.project.setProjectRoot(cwd);
-                    //merge standard conf
-                    fis.config.merge(fis.util.readJSON(__dirname + '/standard.json'));
-                    //merge user conf
-                    fis.config.merge(fis.util.readJSON(conf));
-                    //configure log
-                    fis.log.level = options.debug ? fis.log.L_ALL : fis.log.level;
-                    fis.log.throw = true;
-                    //compile setup
-                    var tmp = fis.compile.setup({
-                        debug    : options.debug,
-                        optimize : options.optimize,
-                        lint     : options.lint,
-                        hash     : options.md5 > 0,
-                        domain   : options.domain
-                    });
-                    
-                    if(options.clean){
-                        fis.cache.clean(tmp);
-                    }
-                    
-                    if(options.watch){
-                        watch(options);
-                    } else {
-                        release(options);
-                    }
-                    return;
+                    root = cwd;
+                    break;
+                } else {
+                    conf = false;
                 }
             } while(pos > 0);
-            fis.log.error('unable to find fis-conf file [' + filename + ']');
+            //init project
+            fis.project.setProjectRoot(root);
+            //merge standard conf
+            fis.config.merge(fis.util.readJSON(__dirname + '/standard.json'));
+            
+            if(conf){
+                //init user conf
+                require(conf);
+            } else {
+                fis.log.warning('unable to find fis-conf file [' + filename + ']');
+            }
+            
+            //configure log
+            fis.log.level = options.debug ? fis.log.L_ALL : fis.log.level;
+            fis.log.throw = true;
+            
+            //compile setup
+            var tmp = fis.compile.setup({
+                debug    : options.debug,
+                optimize : options.optimize,
+                lint     : options.lint,
+                hash     : options.md5 > 0,
+                domain   : options.domain
+            });
+            
+            if(options.clean){
+                fis.cache.clean(tmp);
+            }
+            
+            if(options.watch){
+                watch(options);
+            } else {
+                release(options);
+            }
         });
 };
