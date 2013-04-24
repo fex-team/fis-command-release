@@ -121,8 +121,10 @@ exports.register = function(commander){
             }
             
             //configure log
-            fis.log.level = options.debug ? fis.log.L_ALL : fis.log.level;
-            fis.log.throw = true;
+            if(options.debug){
+                fis.log.level = fis.log.L_ALL;
+                fis.log.throw = true;
+            }
             
             //compile setup
             var tmp = fis.compile.setup({
