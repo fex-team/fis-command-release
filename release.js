@@ -87,7 +87,7 @@ exports.register = function(commander){
         .option('-w, --watch', 'monitor the changes of project')
         .option('-c, --clean', 'clean cache before releasing')
         .option('--md5 <level>', 'md5 release option', parseInt, 0)
-        .option('--domain', 'add domain', Boolean, false)
+        .option('--domains', 'add domain name', Boolean, false)
         .option('--lint', 'with lint', Boolean, false)
         .option('--optimize', 'with optimize', Boolean, false)
         .option('--pack', 'with package', Boolean, true)
@@ -126,16 +126,17 @@ exports.register = function(commander){
                 fis.log.throw = true;
             }
             
-            //compile setup
-            var tmp = fis.compile.setup({
-                debug    : options.debug,
-                optimize : options.optimize,
-                lint     : options.lint,
-                hash     : options.md5 > 0,
-                domain   : options.domain
-            });
+            if(options.domains){
+                options.domain = true;
+                delete options.domains;
+            }
+            
+            //md5 > 0, force release hash file
+            options.hash = options.md5 > 0;
             
             if(options.clean){
+                //compile setup
+                var tmp = fis.compile.setup(options);
                 fis.cache.clean(tmp);
             }
             
