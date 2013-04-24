@@ -85,7 +85,6 @@ exports.register = function(commander){
     commander
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
         .option('-w, --watch', 'monitor the changes of project')
-        .option('-c, --clean', 'clean cache before releasing')
         .option('--md5 <level>', 'md5 release option', parseInt, 0)
         .option('--domains', 'add domain name', Boolean, false)
         .option('--lint', 'with lint', Boolean, false)
@@ -93,6 +92,13 @@ exports.register = function(commander){
         .option('--pack', 'with package', Boolean, true)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
+            
+            //configure log
+            if(options.debug){
+                fis.log.level = fis.log.L_ALL;
+                fis.log.throw = true;
+            }
+            
             //try to find fis-conf.js
             var root = fis.util.realpath(process.cwd()),
                 cwd = root,
@@ -108,36 +114,30 @@ exports.register = function(commander){
                     conf = false;
                 }
             } while(pos > 0);
+            
+            //domain, fuck EventEmitter
+            if(options.domains){
+                options.domain = true;
+                delete options.domains;
+            }
+            //md5 > 0, force release hash file
+            options.hash = options.md5 > 0;
+            
             //init project
             fis.project.setProjectRoot(root);
             //merge standard conf
             fis.config.merge(fis.util.readJSON(__dirname + '/standard.json'));
             
             if(conf){
-                //init user conf
+                var cache = new fis.cache.Cache(conf, 'conf');
+                if(!cache.revert()){
+                    var tmp = fis.compile.setup(options);
+                    fis.cache.clean(tmp);
+                    cache.save();
+                }
                 require(conf);
             } else {
                 fis.log.warning('unable to find fis-conf file [' + filename + ']');
-            }
-            
-            //configure log
-            if(options.debug){
-                fis.log.level = fis.log.L_ALL;
-                fis.log.throw = true;
-            }
-            
-            if(options.domains){
-                options.domain = true;
-                delete options.domains;
-            }
-            
-            //md5 > 0, force release hash file
-            options.hash = options.md5 > 0;
-            
-            if(options.clean){
-                //compile setup
-                var tmp = fis.compile.setup(options);
-                fis.cache.clean(tmp);
             }
             
             if(options.watch){
