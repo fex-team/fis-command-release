@@ -10,6 +10,7 @@
 *.db
 *.bak
 *.tmp
+*.cmd
 ~*
 
 upload.py
