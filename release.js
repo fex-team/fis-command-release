@@ -56,7 +56,7 @@ exports.register = function(commander){
             }
             var mtime = file.getMtime().getTime();
             //collect file to deploy
-            if((file.cache && file.cache.expired) || lastModified[file.subpath] !== mtime){
+            if(file.release && ((file.cache && file.cache.expired) || lastModified[file.subpath] !== mtime)){
                 lastModified[file.subpath] = mtime;
                 collection[file.subpath] = file;
                 if(index > 0 && index % 50 === 0){
