@@ -41,7 +41,7 @@ exports.register = function(commander){
     
     function release(opt){
         //write a white space.
-        var flag, cost, index = 0;
+        var flag, cost;
         opt.beforeEach = function(){
             flag = ' .';
             cost = (new Date).getTime();
@@ -59,13 +59,9 @@ exports.register = function(commander){
             if(file.release && ((file.cache && file.cache.expired) || lastModified[file.subpath] !== mtime)){
                 lastModified[file.subpath] = mtime;
                 collection[file.subpath] = file;
-                if(index > 0 && index % 50 === 0){
-                    process.stdout.write('\n ');
-                }
                 process.stdout.write(flag);
                 fis.log.debug(file.subpath);
             }
-            index++;
         };
         
         //release
