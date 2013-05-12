@@ -108,6 +108,7 @@ exports.register = function(commander){
                     break;
                 } else {
                     conf = false;
+                    pos = cwd.lastIndexOf('/');
                 }
             } while(pos > 0);
             
