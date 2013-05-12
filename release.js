@@ -23,7 +23,7 @@ exports.register = function(commander){
         }
         require('chokidar')
             .watch(root, {
-                ignored : /[\/\\](?:output\b|\.)/i,
+                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.)/i,
                 persistent: true
             })
             .on('add', listener)
