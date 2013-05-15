@@ -43,7 +43,7 @@ exports.register = function(commander){
         //write a white space.
         var flag, cost;
         opt.beforeEach = function(){
-            flag = ' .';
+            flag = '.';
             cost = (new Date).getTime();
         };
         opt.afterEach = function(file){
