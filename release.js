@@ -42,6 +42,7 @@ exports.register = function(commander){
     function release(opt){
         //write a white space.
         var flag, cost;
+        process.stdout.write(' compile : '.green.bold);
         opt.beforeEach = function(){
             flag = '.';
             cost = (new Date).getTime();
