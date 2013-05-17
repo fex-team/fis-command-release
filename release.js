@@ -42,7 +42,7 @@ exports.register = function(commander){
     function release(opt){
         //write a white space.
         var flag, cost;
-        process.stdout.write(' compile : '.green.bold);
+        process.stdout.write(' compile '.green.bold);
         opt.beforeEach = function(){
             flag = '.';
             cost = (new Date).getTime();
@@ -82,11 +82,12 @@ exports.register = function(commander){
     commander
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
         .option('-w, --watch', 'monitor the changes of project')
+        .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('--md5 <level>', 'md5 release option', parseInt, 0)
-        .option('--domains', 'add domain name', Boolean, false)
-        .option('--lint', 'with lint', Boolean, false)
-        .option('--optimize', 'with optimize', Boolean, false)
-        .option('--pack', 'with package', Boolean, true)
+        .option('-D, --domains', 'add domain name', Boolean, false)
+        .option('-L, --lint', 'with lint', Boolean, false)
+        .option('-O, --optimize', 'with optimize', Boolean, false)
+        .option('-P, --pack', 'with package', Boolean, true)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             
@@ -112,6 +113,11 @@ exports.register = function(commander){
                     pos = cwd.lastIndexOf('/');
                 }
             } while(pos > 0);
+            
+            if(options.clean){
+                fis.cache.clean('compile');
+            }
+            delete options.clean;
             
             //domain, fuck EventEmitter
             if(options.domains){
