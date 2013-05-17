@@ -42,7 +42,7 @@ exports.register = function(commander){
     function release(opt){
         //write a white space.
         var flag, cost;
-        process.stdout.write(' compile '.green.bold);
+        process.stdout.write('Ω '.green.bold);
         opt.beforeEach = function(){
             flag = '.';
             cost = (new Date).getTime();
@@ -52,6 +52,7 @@ exports.register = function(commander){
             cost = (new Date).getTime() - cost;
             if(cost > 200){
                 flag = flag.bold.yellow;
+                fis.log.debug(file.realpath);
             } else if(cost < 100){
                 flag = flag.grey;
             }
@@ -61,7 +62,6 @@ exports.register = function(commander){
                 lastModified[file.subpath] = mtime;
                 collection[file.subpath] = file;
                 process.stdout.write(flag);
-                fis.log.debug(file.subpath);
             }
         };
         
@@ -96,7 +96,6 @@ exports.register = function(commander){
                 fis.log.level = fis.log.L_ALL;
                 fis.log.throw = true;
             }
-            
             //try to find fis-conf.js
             var root = fis.util.realpath(process.cwd()),
                 cwd = root,
@@ -115,6 +114,7 @@ exports.register = function(commander){
             } while(pos > 0);
             
             if(options.clean){
+                fis.log.notice('clean compile cache ...');
                 fis.cache.clean('compile');
             }
             delete options.clean;
