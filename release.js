@@ -42,7 +42,7 @@ exports.register = function(commander){
     function release(opt){
         //write a white space.
         var flag, cost;
-        process.stdout.write('Ω '.green.bold);
+        process.stdout.write(' Ω'.green.bold);
         opt.beforeEach = function(){
             flag = '.';
             cost = (new Date).getTime();
@@ -58,8 +58,17 @@ exports.register = function(commander){
             }
             var mtime = file.getMtime().getTime();
             //collect file to deploy
-            if(file.release && ((file.cache && file.cache.expired) || lastModified[file.subpath] !== mtime)){
+            if(file.release && lastModified[file.subpath] !== mtime){
                 lastModified[file.subpath] = mtime;
+                if(!collection[file.subpath]){
+                    collection[file.subpath] = file;
+                    process.stdout.write(flag);
+                }
+            }
+        };
+        
+        opt.beforeCompile = function(file){
+            if(!collection[file.subpath]){
                 collection[file.subpath] = file;
                 process.stdout.write(flag);
             }
