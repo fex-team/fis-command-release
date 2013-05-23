@@ -40,9 +40,8 @@ exports.register = function(commander){
     var deploy = require('./lib/deploy.js');
     
     function release(opt){
-        //write a white space.
-        var flag, cost;
-        process.stdout.write(' Ω'.green.bold);
+        var flag, cost, start = Date.now();
+        process.stdout.write(' Ω'.green.bold + ': ');
         opt.beforeEach = function(){
             flag = '.';
             cost = (new Date).getTime();
@@ -78,7 +77,7 @@ exports.register = function(commander){
         fis.release(opt, function(ret){
             for(var item in collection){
                 if(collection.hasOwnProperty(item)){
-                    process.stdout.write('\n');
+                    process.stdout.write(' ' + (Date.now() - start + 'ms').bold.green + '\n');
                     fis.util.map(ret.pkg, collection, true);
                     deploy(opt.dest, opt.md5, collection);
                     collection = {};
@@ -123,8 +122,11 @@ exports.register = function(commander){
             } while(pos > 0);
             
             if(options.clean){
-                fis.log.notice('clean compile cache ...');
+                process.stdout.write(' δ'.bold.yellow + ': ');
+                var now = Date.now();
                 fis.cache.clean('compile');
+                process.stdout.write((Date.now() - now + 'ms').green.bold);
+                process.stdout.write('\n');
             }
             delete options.clean;
             
