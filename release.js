@@ -41,9 +41,9 @@ exports.register = function(commander){
     
     function release(opt){
         var flag, cost, start = Date.now();
-        process.stdout.write(' Ω'.green.bold + ': ');
+        process.stdout.write(' Ω'.green.bold);
         opt.beforeEach = function(){
-            flag = '.';
+            flag = opt.debug ? '' : '.';
             cost = (new Date).getTime();
         };
         opt.afterEach = function(file){
@@ -77,7 +77,10 @@ exports.register = function(commander){
         fis.release(opt, function(ret){
             for(var item in collection){
                 if(collection.hasOwnProperty(item)){
-                    process.stdout.write(' ' + (Date.now() - start + 'ms').bold.green + '\n');
+                    process.stdout.write(
+                        (opt.debug ? '' : ' ') +
+                        (Date.now() - start + 'ms').bold.green + '\n'
+                    );
                     fis.util.map(ret.pkg, collection, true);
                     deploy(opt.dest, opt.md5, collection);
                     collection = {};
@@ -121,8 +124,10 @@ exports.register = function(commander){
                 }
             } while(pos > 0);
             
+            process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
+            
             if(options.clean){
-                process.stdout.write(' δ'.bold.yellow + ': ');
+                process.stdout.write(' δ'.bold.yellow);
                 var now = Date.now();
                 fis.cache.clean('compile');
                 process.stdout.write((Date.now() - now + 'ms').green.bold);
