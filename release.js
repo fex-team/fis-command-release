@@ -81,8 +81,8 @@ exports.register = function(commander){
                         (opt.debug ? '' : ' ') +
                         (Date.now() - start + 'ms').bold.green + '\n'
                     );
-                    fis.util.map(ret.pkg, collection, true);
                     deploy(opt.dest, opt.md5, collection);
+                    deploy(opt.dest, opt.md5, ret.pkg);
                     collection = {};
                     return;
                 }
