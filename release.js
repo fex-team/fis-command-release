@@ -148,6 +148,9 @@ exports.register = function(commander){
             //merge standard conf
             fis.config.merge({
                 modules : {
+                    modular : {
+                        js : 'jswrapper'
+                    },
                     optimizer : {
                         js : 'uglify-js',
                         css : 'clean-css'
