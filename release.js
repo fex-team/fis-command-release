@@ -12,7 +12,7 @@ exports.register = function(commander){
     function watch(opt){
         var root = fis.project.getProjectPath();
         var timer = -1;
-        var safePathReg = /^[:\\\/ _\-.\w]+$/i;
+        var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         function listener(path){
             if(safePathReg.test(path)){
                 clearTimeout(timer);
@@ -129,7 +129,7 @@ exports.register = function(commander){
             if(options.clean){
                 process.stdout.write(' δ'.bold.yellow);
                 var now = Date.now();
-                fis.cache.clean('compile');
+                fis.compile.clean();
                 process.stdout.write((Date.now() - now + 'ms').green.bold);
                 process.stdout.write('\n');
             }
@@ -146,7 +146,14 @@ exports.register = function(commander){
             //init project
             fis.project.setProjectRoot(root);
             //merge standard conf
-            fis.config.merge(fis.util.readJSON(__dirname + '/standard.json'));
+            fis.config.merge({
+                modules : {
+                    optimizer : {
+                        js : 'uglify-js',
+                        css : 'clean-css'
+                    }
+                }
+            });
             
             if(conf){
                 var cache = new fis.cache.Cache(conf, 'conf');
