@@ -41,7 +41,7 @@ exports.register = function(commander){
     
     function release(opt){
         var flag, cost, start = Date.now();
-        process.stdout.write(' Ω'.green.bold);
+        process.stdout.write('\n Ω'.green.bold);
         opt.beforeEach = function(){
             flag = opt.debug ? '' : '.';
             cost = (new Date).getTime();
@@ -139,7 +139,7 @@ exports.register = function(commander){
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
             
             if(options.clean){
-                process.stdout.write(' δ'.bold.yellow);
+                process.stdout.write('\n δ'.bold.yellow);
                 var now = Date.now();
                 fis.compile.clean();
                 process.stdout.write((Date.now() - now + 'ms').green.bold);
