@@ -92,9 +92,10 @@ exports.register = function(commander){
     
     commander
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
+        .option('-r, --root <path>', 'set project root')
         .option('-w, --watch', 'monitor the changes of project')
         .option('-c, --clean', 'clean compile cache', Boolean, false)
-        .option('--md5 <level>', 'md5 release option', parseInt, 0)
+        .option('-m, --md5 [level]', 'md5 release option', Number)
         .option('-D, --domains', 'add domain name', Boolean, false)
         .option('-L, --lint', 'with lint', Boolean, false)
         .option('-O, --optimize', 'with optimize', Boolean, false)
@@ -107,22 +108,31 @@ exports.register = function(commander){
                 fis.log.level = fis.log.L_ALL;
                 fis.log.throw = true;
             }
-            //try to find fis-conf.js
-            var root = fis.util.realpath(process.cwd()),
-                cwd = root,
-                filename = fis.project.conf,
-                pos = cwd.length, conf;
-            do {
-                cwd  = cwd.substring(0, pos);
-                conf = cwd + '/' + filename;
-                if(fis.util.exists(conf)){
-                    root = cwd;
-                    break;
+            var root;
+            if(options.root){
+                root = fis.util.realpath(options.root);
+                if(fis.util.isDir(root)){
+                    delete options.root;
                 } else {
-                    conf = false;
-                    pos = cwd.lastIndexOf('/');
+                    fis.log.error('invalid project root path [' + options.root + ']');
                 }
-            } while(pos > 0);
+            } else{
+                //try to find fis-conf.js
+                var cwd = root = fis.util.realpath(process.cwd()),
+                    filename = fis.project.conf,
+                    pos = cwd.length, conf;
+                do {
+                    cwd  = cwd.substring(0, pos);
+                    conf = cwd + '/' + filename;
+                    if(fis.util.exists(conf)){
+                        root = cwd;
+                        break;
+                    } else {
+                        conf = false;
+                        pos = cwd.lastIndexOf('/');
+                    }
+                } while(pos > 0);
+            }
             
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
             
@@ -139,6 +149,17 @@ exports.register = function(commander){
             if(options.domains){
                 options.domain = true;
                 delete options.domains;
+            }
+            
+            switch (typeof options.md5){
+                case 'undefined':
+                    options.md5 = 0;
+                    break;
+                case 'boolean':
+                    options.md5 = options.md5 ? 1 : 0;
+                    break;
+                default :
+                    options.md5 = isNaN(options.md5) ? 0 : parseInt(options.md5);
             }
             //md5 > 0, force release hash file
             options.hash = options.md5 > 0;
