@@ -108,10 +108,13 @@ exports.register = function(commander){
                 fis.log.level = fis.log.L_ALL;
                 fis.log.throw = true;
             }
-            var root;
+            var root, conf, filename = fis.project.conf;
             if(options.root){
                 root = fis.util.realpath(options.root);
                 if(fis.util.isDir(root)){
+                    if(fis.util.isFile(root + '/' + filename)){
+                        conf = root + '/' + filename;
+                    }
                     delete options.root;
                 } else {
                     fis.log.error('invalid project root path [' + options.root + ']');
@@ -119,8 +122,7 @@ exports.register = function(commander){
             } else{
                 //try to find fis-conf.js
                 var cwd = root = fis.util.realpath(process.cwd()),
-                    filename = fis.project.conf,
-                    pos = cwd.length, conf;
+                    pos = cwd.length;
                 do {
                     cwd  = cwd.substring(0, pos);
                     conf = cwd + '/' + filename;
