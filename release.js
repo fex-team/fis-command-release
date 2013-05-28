@@ -97,9 +97,9 @@ exports.register = function(commander){
         .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('-m, --md5 [level]', 'md5 release option', Number)
         .option('-D, --domains', 'add domain name', Boolean, false)
-        .option('-L, --lint', 'with lint', Boolean, false)
-        .option('-O, --optimize', 'with optimize', Boolean, false)
-        .option('-P, --pack', 'with package', Boolean, true)
+        .option('-l, --lint', 'with lint', Boolean, false)
+        .option('-o, --optimize', 'with optimize', Boolean, false)
+        .option('-p, --pack', 'with package', Boolean, true)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             
