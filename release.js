@@ -23,7 +23,7 @@ exports.register = function(commander){
         }
         require('chokidar')
             .watch(root, {
-                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.)/i,
+                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-(?:conf|merge)\.json$)/i,
                 persistent: true
             })
             .on('add', listener)
@@ -138,6 +138,18 @@ exports.register = function(commander){
             
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
             
+            if(conf){
+                var cache = new fis.cache.Cache(conf, 'conf');
+                if(!cache.revert()){
+                    var tmp = fis.compile.setup(options);
+                    fis.cache.clean(tmp);
+                    cache.save();
+                }
+                require(conf);
+            } else {
+                fis.log.warning('unable to find fis-conf file [' + filename + ']');
+            }
+            
             if(options.clean){
                 process.stdout.write('\n δ'.bold.yellow);
                 var now = Date.now();
@@ -180,18 +192,6 @@ exports.register = function(commander){
                     }
                 }
             });
-            
-            if(conf){
-                var cache = new fis.cache.Cache(conf, 'conf');
-                if(!cache.revert()){
-                    var tmp = fis.compile.setup(options);
-                    fis.cache.clean(tmp);
-                    cache.save();
-                }
-                require(conf);
-            } else {
-                fis.log.warning('unable to find fis-conf file [' + filename + ']');
-            }
             
             if(options.watch){
                 watch(options);
