@@ -188,7 +188,9 @@ exports.register = function(commander){
                     },
                     optimizer : {
                         js : 'uglify-js',
-                        css : 'clean-css'
+                        css : 'clean-css',
+                        htm : 'html-minifier',
+                        html : 'html-minifier'
                     }
                 }
             });
