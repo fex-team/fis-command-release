@@ -30,7 +30,7 @@ exports.register = function(commander){
             .on('change', listener)
             .on('unlink', listener)
             .on('error', function(err){
-                fis.log.error(err);
+                //fis.log.error(err);
             });
     }
     
