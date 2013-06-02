@@ -75,30 +75,38 @@ exports.register = function(commander){
         };
         
         opt.beforeCompile = function(file){
-            if(!collection[file.subpath]){
-                collection[file.subpath] = file;
-                process.stdout.write(flag);
-            }
+            collection[file.subpath] = file;
+            process.stdout.write(flag);
         };
         
-        //release
-        fis.release(opt, function(ret){
-            for(var item in collection){
-                process.stdout.write(
-                    (opt.debug ? '' : ' ') +
-                    (Date.now() - start + 'ms').bold.green + '\n'
-                );
-                if(opt.unique){
-                    time(fis.compile.clean);
+        try {
+            //release
+            fis.release(opt, function(ret){
+                for(var item in collection){
+                    process.stdout.write(
+                        (opt.debug ? '' : ' ') +
+                        (Date.now() - start + 'ms').bold.green + '\n'
+                    );
+                    if(opt.unique){
+                        time(fis.compile.clean);
+                    }
+                    if(collection.hasOwnProperty(item)){
+                        deploy(opt.dest, opt.md5, collection);
+                        deploy(opt.dest, opt.md5, ret.pkg);
+                        collection = {};
+                        return;
+                    }
                 }
-                if(collection.hasOwnProperty(item)){
-                    deploy(opt.dest, opt.md5, collection);
-                    deploy(opt.dest, opt.md5, ret.pkg);
-                    collection = {};
-                    return;
+            });
+        } catch(e) {
+            process.stdout.write('\n [ERROR] ' + (e.message || e) + '\u0007\n');
+            if(!opt.watch){
+                if(opt.debug){
+                    throw e;
                 }
+                process.exit(1);
             }
-        });
+        }
     }
     
     commander
@@ -115,10 +123,11 @@ exports.register = function(commander){
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             
+            fis.log.throw = true;
+            
             //configure log
             if(options.debug){
                 fis.log.level = fis.log.L_ALL;
-                fis.log.throw = true;
             }
             var root, conf, filename = fis.project.conf;
             if(options.root){
