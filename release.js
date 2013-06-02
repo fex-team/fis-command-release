@@ -34,6 +34,14 @@ exports.register = function(commander){
             });
     }
     
+    function time(fn){
+        process.stdout.write('\n δ'.bold.yellow);
+        var now = Date.now();
+        fn();
+        process.stdout.write((Date.now() - now + 'ms').green.bold);
+        process.stdout.write('\n');
+    }
+    
     
     var lastModified = {};
     var collection = {};
@@ -76,11 +84,14 @@ exports.register = function(commander){
         //release
         fis.release(opt, function(ret){
             for(var item in collection){
+                process.stdout.write(
+                    (opt.debug ? '' : ' ') +
+                    (Date.now() - start + 'ms').bold.green + '\n'
+                );
+                if(opt.unique){
+                    time(fis.compile.clean);
+                }
                 if(collection.hasOwnProperty(item)){
-                    process.stdout.write(
-                        (opt.debug ? '' : ' ') +
-                        (Date.now() - start + 'ms').bold.green + '\n'
-                    );
                     deploy(opt.dest, opt.md5, collection);
                     deploy(opt.dest, opt.md5, ret.pkg);
                     collection = {};
@@ -100,6 +111,7 @@ exports.register = function(commander){
         .option('-l, --lint', 'with lint', Boolean, false)
         .option('-o, --optimize', 'with optimize', Boolean, false)
         .option('-p, --pack', 'with package', Boolean, true)
+        .option('--unique', 'use unique compile caching', Boolean, false)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             
@@ -139,10 +151,9 @@ exports.register = function(commander){
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
             
             if(conf){
-                var cache = new fis.cache.Cache(conf, 'conf');
+                var cache = fis.cache(conf, 'conf');
                 if(!cache.revert()){
-                    var tmp = fis.compile.setup(options);
-                    fis.cache.clean(tmp);
+                    options.clean = true;
                     cache.save();
                 }
                 require(conf);
@@ -151,11 +162,9 @@ exports.register = function(commander){
             }
             
             if(options.clean){
-                process.stdout.write('\n δ'.bold.yellow);
-                var now = Date.now();
-                fis.compile.clean();
-                process.stdout.write((Date.now() - now + 'ms').green.bold);
-                process.stdout.write('\n');
+                time(function(){
+                    fis.cache.clean('compile');
+                });
             }
             delete options.clean;
             
