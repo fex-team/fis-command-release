@@ -99,11 +99,12 @@ exports.register = function(commander){
                 }
             });
         } catch(e) {
-            process.stdout.write('\n [ERROR] ' + (e.message || e) + '\u0007\n');
-            if(!opt.watch){
-                if(opt.debug){
-                    throw e;
-                }
+            process.stdout.write('\n [ERROR] ' + (e.message || e) + '\n');
+            if(opt.watch){
+                process.stdout.write('\u0007');
+            } else if(opt.debug) {
+                throw e;
+            } else {
                 process.exit(1);
             }
         }
