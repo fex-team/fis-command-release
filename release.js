@@ -120,7 +120,7 @@ exports.register = function(commander){
         .option('-l, --lint', 'with lint', Boolean, false)
         .option('-o, --optimize', 'with optimize', Boolean, false)
         .option('-p, --pack', 'with package', Boolean, true)
-        .option('--unique', 'use unique compile caching', Boolean, false)
+        .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--debug', 'debug mode', Boolean, false)
         .action(function(options){
             
