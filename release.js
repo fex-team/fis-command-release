@@ -168,7 +168,7 @@ exports.register = function(commander){
                 }
                 require(conf);
             } else {
-                fis.log.warning('unable to find fis-conf file [' + filename + ']');
+                fis.log.warning('missing ' + filename);
             }
             
             if(options.clean){
