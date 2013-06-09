@@ -1,13 +1,13 @@
 {
     "name" : "fis-command-release",
     "description" : "fis release command.",
-    "version" : "0.7.1",
+    "version" : "0.7.2",
     "author" : "FIS Team <fis@baidu.com>",
     "homepage" : "http://fis.baidu.com/",
     "keywords": [ "fis" ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/fouber/fis-command-release.git"
+        "url": "https://github.com/fis-dev/fis-command-release.git"
     },
     "engines" : {
         "node" : ">= 0.8.0"
