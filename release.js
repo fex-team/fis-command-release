@@ -200,20 +200,6 @@ exports.register = function(commander){
             
             //init project
             fis.project.setProjectRoot(root);
-            //merge standard conf
-            fis.config.merge({
-                modules : {
-                    postprocessor : {
-                        js : 'jswrapper'
-                    },
-                    optimizer : {
-                        js : 'uglify-js',
-                        css : 'clean-css',
-                        htm : 'html-minifier',
-                        html : 'html-minifier'
-                    }
-                }
-            });
             
             if(options.watch){
                 watch(options);
