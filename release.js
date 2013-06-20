@@ -123,7 +123,9 @@ exports.register = function(commander){
         .option('-p, --pack', 'with package', Boolean, true)
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--debug', 'debug mode', Boolean, false)
-        .action(function(options){
+        .action(function(){
+            
+            var options = arguments[arguments.length - 1];
             
             fis.log.throw = true;
             
