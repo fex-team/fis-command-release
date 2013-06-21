@@ -82,15 +82,15 @@ exports.register = function(commander){
         try {
             //release
             fis.release(opt, function(ret){
+                process.stdout.write(
+                    (opt.debug ? '' : ' ') +
+                    (Date.now() - start + 'ms').bold.green + '\n'
+                );
                 for(var item in collection){
-                    process.stdout.write(
-                        (opt.debug ? '' : ' ') +
-                        (Date.now() - start + 'ms').bold.green + '\n'
-                    );
-                    if(opt.unique){
-                        time(fis.compile.clean);
-                    }
                     if(collection.hasOwnProperty(item)){
+                        if(opt.unique){
+                            time(fis.compile.clean);
+                        }
                         deploy(opt.dest, opt.md5, collection);
                         deploy(opt.dest, opt.md5, ret.pkg);
                         collection = {};
