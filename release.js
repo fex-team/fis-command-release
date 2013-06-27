@@ -161,6 +161,9 @@ exports.register = function(commander){
                 } while(pos > 0);
             }
             
+            //init project
+            fis.project.setProjectRoot(root);
+            
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
             
             if(conf){
@@ -199,9 +202,6 @@ exports.register = function(commander){
             }
             //md5 > 0, force release hash file
             options.hash = options.md5 > 0;
-            
-            //init project
-            fis.project.setProjectRoot(root);
             
             if(options.watch){
                 watch(options);
