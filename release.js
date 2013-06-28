@@ -16,6 +16,9 @@ exports.register = function(commander){
         function listener(path){
             if(safePathReg.test(path)){
                 clearTimeout(timer);
+                if(LRServer){
+                    clearTimeout(LRTimer);
+                }
                 timer = setTimeout(function(){
                     release(opt);
                 }, 500);
@@ -43,9 +46,28 @@ exports.register = function(commander){
     }
     
     
+    var LRServer, LRTimer;
     var lastModified = {};
     var collection = {};
     var deploy = require('./lib/deploy.js');
+    
+    function reload(){
+        fis.util.map(LRServer.connections, function(id, connection){
+            try {
+                connection.send({
+                    command: 'reload',
+                    path: '*',
+                    liveCSS: true
+                });
+                process.stdout.write('\n Ψ'.bold.yellow + '35729');
+            } catch (e) {
+                try {
+                    connection.close();
+                } catch (e) {}
+                delete LRServer.connections[id];
+            }
+        });
+    }
     
     function release(opt){
         var flag, cost, start = Date.now();
@@ -94,6 +116,10 @@ exports.register = function(commander){
                         deploy(opt.dest, opt.md5, collection);
                         deploy(opt.dest, opt.md5, ret.pkg);
                         collection = {};
+                        if(LRServer){
+                            clearTimeout(LRTimer);
+                            LRTimer = setTimeout(reload, 500);
+                        }
                         return;
                     }
                 }
@@ -114,6 +140,7 @@ exports.register = function(commander){
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
         .option('-r, --root <path>', 'set project root')
         .option('-w, --watch', 'monitor the changes of project')
+        .option('-L, --live', 'automatically reload your browser')
         .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('-m, --md5 [level]', 'md5 release option', Number)
         .option('-D, --domains', 'add domain name', Boolean, false)
@@ -188,6 +215,31 @@ exports.register = function(commander){
             if(options.domains){
                 options.domain = true;
                 delete options.domains;
+            }
+            
+            if(options.live){
+                var LiveReloadServer = require('livereload-server');
+                LRServer = new LiveReloadServer({
+                    id: 'com.baidu.fis',
+                    name: 'fis-reload',
+                    version : fis.cli.info.version,
+                    protocols: {
+                        monitoring: 7
+                    }
+                });
+                LRServer.on('livereload.js', function(req, res) {
+                    var script = fis.util.read(__dirname + '/vendor/livereload.js');
+                    res.writeHead(200, {'Content-Length': script.length, 'Content-Type': 'text/javascript'});
+                    res.end(script);
+                });
+                LRServer.listen(function(err) {
+                    if (err) {
+                        err.message = 'LiveReload server Listening failed: ' + err.message;
+                        fis.log.error(err);
+                    }
+                    process.stdout.write('\n Ψ'.bold.yellow + '35729');
+                });
+                delete options.live;
             }
             
             switch (typeof options.md5){
