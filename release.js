@@ -16,9 +16,6 @@ exports.register = function(commander){
         function listener(path){
             if(safePathReg.test(path)){
                 clearTimeout(timer);
-                if(LRServer){
-                    clearTimeout(LRTimer);
-                }
                 timer = setTimeout(function(){
                     release(opt);
                 }, 500);
@@ -47,27 +44,33 @@ exports.register = function(commander){
     
     
     var LRServer, LRTimer;
+    function reload(){
+        if(LRServer && LRServer.connections) {
+            fis.util.map(LRServer.connections, function(id, connection){
+                try {
+                    connection.send({
+                        command: 'reload',
+                        path: '*',
+                        liveCSS: true
+                    });
+                } catch (e) {
+                    try {
+                        connection.close();
+                    } catch (e) {}
+                    delete LRServer.connections[id];
+                }
+            });
+        }
+    }
+    
     var lastModified = {};
     var collection = {};
     var deploy = require('./lib/deploy.js');
     
-    function reload(){
-        fis.util.map(LRServer.connections, function(id, connection){
-            try {
-                connection.send({
-                    command: 'reload',
-                    path: '*',
-                    liveCSS: true
-                });
-                process.stdout.write('\n Ψ'.bold.yellow + '35729');
-            } catch (e) {
-                try {
-                    connection.close();
-                } catch (e) {}
-                delete LRServer.connections[id];
-            }
-        });
-    }
+    deploy.done = function(){
+        clearTimeout(LRTimer);
+        LRTimer = setTimeout(reload, 200);
+    };
     
     function release(opt){
         var flag, cost, start = Date.now();
@@ -116,10 +119,6 @@ exports.register = function(commander){
                         deploy(opt.dest, opt.md5, collection);
                         deploy(opt.dest, opt.md5, ret.pkg);
                         collection = {};
-                        if(LRServer){
-                            clearTimeout(LRTimer);
-                            LRTimer = setTimeout(reload, 500);
-                        }
                         return;
                     }
                 }
@@ -237,8 +236,8 @@ exports.register = function(commander){
                         err.message = 'LiveReload server Listening failed: ' + err.message;
                         fis.log.error(err);
                     }
-                    process.stdout.write('\n Ψ'.bold.yellow + '35729');
                 });
+                process.stdout.write('\n Ψ'.bold.yellow + '35729');
                 delete options.live;
             }
             
