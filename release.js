@@ -35,7 +35,7 @@ exports.register = function(commander){
     }
     
     function time(fn){
-        process.stdout.write('\n δ'.bold.yellow);
+        process.stdout.write('\n δ '.bold.yellow);
         var now = Date.now();
         fn();
         process.stdout.write((Date.now() - now + 'ms').green.bold);
@@ -74,7 +74,7 @@ exports.register = function(commander){
     
     function release(opt){
         var flag, cost, start = Date.now();
-        process.stdout.write('\n Ω'.green.bold);
+        process.stdout.write('\n Ω '.green.bold);
         opt.beforeEach = function(){
             flag = opt.debug ? '' : '.';
             cost = (new Date).getTime();
@@ -237,7 +237,7 @@ exports.register = function(commander){
                         fis.log.error(err);
                     }
                 });
-                process.stdout.write('\n Ψ'.bold.yellow + '35729');
+                process.stdout.write('\n Ψ '.bold.yellow + '35729');
                 delete options.live;
             }
             
