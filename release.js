@@ -23,7 +23,7 @@ exports.register = function(commander){
         }
         require('chokidar')
             .watch(root, {
-                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-(?:conf|merge)\.json$)/i,
+                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i,
                 persistent: true
             })
             .on('add', listener)
