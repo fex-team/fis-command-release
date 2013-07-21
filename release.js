@@ -42,7 +42,6 @@ exports.register = function(commander){
         process.stdout.write('\n');
     }
     
-    
     var LRServer, LRTimer;
     function reload(){
         if(LRServer && LRServer.connections) {
