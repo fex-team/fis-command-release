@@ -90,11 +90,11 @@ exports.register = function(commander){
             var mtime = file.getMtime().getTime();
             //collect file to deploy
             if(file.release && lastModified[file.subpath] !== mtime){
-                lastModified[file.subpath] = mtime;
                 if(!collection[file.subpath]){
-                    collection[file.subpath] = file;
                     process.stdout.write(flag);
                 }
+                lastModified[file.subpath] = mtime;
+                collection[file.subpath] = file;
             }
         };
         
