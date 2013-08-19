@@ -19,4 +19,4 @@
         -o, --optimize      with optimizing
         -p, --pack          with package
         -u, --unique        use unique compile caching
-        --debug             debug mode
+        --verbose           enable verbose output

@@ -75,7 +75,7 @@ exports.register = function(commander){
         var flag, cost, start = Date.now();
         process.stdout.write('\n Ω '.green.bold);
         opt.beforeEach = function(){
-            flag = opt.debug ? '' : '.';
+            flag = opt.verbose ? '' : '.';
             cost = (new Date).getTime();
         };
         opt.afterEach = function(file){
@@ -107,7 +107,7 @@ exports.register = function(commander){
             //release
             fis.release(opt, function(ret){
                 process.stdout.write(
-                    (opt.debug ? '' : ' ') +
+                    (opt.verbose ? '' : ' ') +
                     (Date.now() - start + 'ms').bold.green + '\n'
                 );
                 for(var item in collection){
@@ -126,7 +126,7 @@ exports.register = function(commander){
             process.stdout.write('\n [ERROR] ' + (e.message || e) + '\n');
             if(opt.watch){
                 process.stdout.write('\u0007');
-            } else if(opt.debug) {
+            } else if(opt.verbose) {
                 throw e;
             } else {
                 process.exit(1);
@@ -147,7 +147,7 @@ exports.register = function(commander){
         .option('-o, --optimize', 'with optimizing', Boolean, false)
         .option('-p, --pack', 'with package', Boolean, true)
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
-        .option('--debug', 'debug mode', Boolean, false)
+        .option('--verbose', 'enable verbose output', Boolean, false)
         .action(function(){
             
             var options = arguments[arguments.length - 1];
@@ -155,7 +155,7 @@ exports.register = function(commander){
             fis.log.throw = true;
             
             //configure log
-            if(options.debug){
+            if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
             }
             var root, conf, filename = fis.project.conf;
