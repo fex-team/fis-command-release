@@ -24,7 +24,7 @@ exports.register = function(commander){
         require('chokidar')
             .watch(root, {
                 ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i,
-                usePolling: false,
+                // usePolling: false,
                 persistent: true
             })
             .on('add', listener)
