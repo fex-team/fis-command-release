@@ -137,16 +137,17 @@ exports.register = function(commander){
     
     commander
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
-        .option('-r, --root <path>', 'set project root')
-        .option('-w, --watch', 'monitor the changes of project')
-        .option('-L, --live', 'automatically reload your browser')
-        .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('-m, --md5 [level]', 'md5 release option', Number)
         .option('-D, --domains', 'add domain name', Boolean, false)
         .option('-l, --lint', 'with lint', Boolean, false)
         .option('-t, --test', 'with unit testing', Boolean, false)
         .option('-o, --optimize', 'with optimizing', Boolean, false)
         .option('-p, --pack', 'with package', Boolean, true)
+        .option('-w, --watch', 'monitor the changes of project')
+        .option('-L, --live', 'automatically reload your browser')
+        .option('-c, --clean', 'clean compile cache', Boolean, false)
+        .option('-r, --root <path>', 'set project root')
+        .option('-C, --conf <filename>', 'set fis-conf filename, fis-conf.js by default', 'fis-conf.js')
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--verbose', 'enable verbose output', Boolean, false)
         .action(function(){
@@ -159,7 +160,7 @@ exports.register = function(commander){
             if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
             }
-            var root, conf, filename = fis.project.conf;
+            var root, conf, filename = options.conf;
             if(options.root){
                 root = fis.util.realpath(options.root);
                 if(fis.util.isDir(root)){
@@ -200,7 +201,7 @@ exports.register = function(commander){
                 }
                 require(conf);
             } else {
-                fis.log.warning('missing ' + filename);
+                fis.log.warning('missing config file [' + filename + ']');
             }
             
             if(options.clean){
