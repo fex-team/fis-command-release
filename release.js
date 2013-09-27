@@ -147,7 +147,7 @@ exports.register = function(commander){
         .option('-L, --live', 'automatically reload your browser')
         .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('-r, --root <path>', 'set project root')
-        .option('-C, --conf <filename>', 'set fis-conf filename, fis-conf.js by default', 'fis-conf.js')
+        .option('-f, --file <filename>', 'set fis-conf filename, fis-conf.js by default', 'fis-conf.js')
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--verbose', 'enable verbose output', Boolean, false)
         .action(function(){
