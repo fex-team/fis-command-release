@@ -160,7 +160,7 @@ exports.register = function(commander){
             if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
             }
-            var root, conf, filename = options.conf;
+            var root, conf, filename = options.file;
             if(options.root){
                 root = fis.util.realpath(options.root);
                 if(fis.util.isDir(root)){
