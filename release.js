@@ -164,7 +164,9 @@ exports.register = function(commander){
             if(options.root){
                 root = fis.util.realpath(options.root);
                 if(fis.util.isDir(root)){
-                    if(fis.util.isFile(root + '/' + filename)){
+                    if(fis.util.isFile(filename)){
+                        conf = fis.util.realpath(filename);
+                    } else if(fis.util.isFile(root + '/' + filename)){
                         conf = root + '/' + filename;
                     }
                     delete options.root;
