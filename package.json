@@ -18,7 +18,7 @@
     },
     "dependencies" : {
         "chokidar" : "0.6.3",
-        "livereload-server-special" : "0.2.3"
+        "livereload-server-spec" : "0.2.3"
     },
     "devDependencies": {}
 }
