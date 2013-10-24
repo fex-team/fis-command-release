@@ -220,7 +220,7 @@ exports.register = function(commander){
             }
             
             if(options.live){
-                var LiveReloadServer = require('livereload-server');
+                var LiveReloadServer = require('livereload-server-special');
                 LRServer = new LiveReloadServer({
                     id: 'com.baidu.fis',
                     name: 'fis-reload',
