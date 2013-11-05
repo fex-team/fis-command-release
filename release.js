@@ -116,8 +116,8 @@ exports.register = function(commander){
                         if(opt.unique){
                             time(fis.compile.clean);
                         }
-                        deploy(opt.dest, opt.md5, collection);
-                        deploy(opt.dest, opt.md5, ret.pkg);
+                        deploy(opt, collection);
+                        deploy(opt, ret.pkg);
                         collection = {};
                         return;
                     }
@@ -240,8 +240,8 @@ exports.register = function(commander){
                         fis.log.error(err);
                     }
                 });
-                process.stdout.write('\n Ψ '.bold.yellow + '35729');
-                delete options.live;
+                process.stdout.write('\n Ψ '.bold.yellow + '35729\n');
+                //delete options.live;
             }
             
             switch (typeof options.md5){
