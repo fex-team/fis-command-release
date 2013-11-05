@@ -221,16 +221,18 @@ exports.register = function(commander){
             
             if(options.live){
                 var LiveReloadServer = require('livereload-server-spec');
+                var port = fis.config.get('livereload.port', 8132);
                 LRServer = new LiveReloadServer({
                     id: 'com.baidu.fis',
                     name: 'fis-reload',
                     version : fis.cli.info.version,
+                    port : port,
                     protocols: {
                         monitoring: 7
                     }
                 });
                 LRServer.on('livereload.js', function(req, res) {
-                    var script = fis.util.read(__dirname + '/vendor/livereload.js');
+                    var script = fis.util.fs.readFileSync(__dirname + '/vendor/livereload.js');
                     res.writeHead(200, {'Content-Length': script.length, 'Content-Type': 'text/javascript'});
                     res.end(script);
                 });
@@ -240,7 +242,7 @@ exports.register = function(commander){
                         fis.log.error(err);
                     }
                 });
-                process.stdout.write('\n Ψ '.bold.yellow + '35729\n');
+                process.stdout.write('\n Ψ '.bold.yellow + port + '\n');
                 //delete options.live;
             }
             
