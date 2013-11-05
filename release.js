@@ -147,7 +147,7 @@ exports.register = function(commander){
         .option('-L, --live', 'automatically reload your browser')
         .option('-c, --clean', 'clean compile cache', Boolean, false)
         .option('-r, --root <path>', 'set project root')
-        .option('-f, --file <filename>', 'set fis-conf filename, fis-conf.js by default', 'fis-conf.js')
+        .option('-f, --file <filename>', 'set fis-conf file')
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--verbose', 'enable verbose output', Boolean, false)
         .action(function(){
@@ -160,34 +160,41 @@ exports.register = function(commander){
             if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
             }
-            var root, conf, filename = options.file;
+            var root, conf, filename = 'fis-conf.js';
+            if(options.file){
+                if(fis.util.isFile(options.file)){
+                    conf = fis.util.realpath(options.file);
+                } else {
+                    fis.log.error('invalid fis config file path [' + options.file + ']');
+                }
+            }
             if(options.root){
                 root = fis.util.realpath(options.root);
                 if(fis.util.isDir(root)){
-                    if(fis.util.isFile(filename)){
-                        conf = fis.util.realpath(filename);
-                    } else if(fis.util.isFile(root + '/' + filename)){
+                    if(!conf && fis.util.isFile(root + '/' + filename)){
                         conf = root + '/' + filename;
                     }
                     delete options.root;
                 } else {
                     fis.log.error('invalid project root path [' + options.root + ']');
                 }
-            } else{
-                //try to find fis-conf.js
-                var cwd = root = fis.util.realpath(process.cwd()),
-                    pos = cwd.length;
-                do {
-                    cwd  = cwd.substring(0, pos);
-                    conf = cwd + '/' + filename;
-                    if(fis.util.exists(conf)){
-                        root = cwd;
-                        break;
-                    } else {
-                        conf = false;
-                        pos = cwd.lastIndexOf('/');
-                    }
-                } while(pos > 0);
+            } else {
+                root = fis.util.realpath(process.cwd());
+                if(!conf){
+                    //try to find fis-conf.js
+                    var cwd = root, pos = cwd.length;
+                    do {
+                        cwd  = cwd.substring(0, pos);
+                        conf = cwd + '/' + filename;
+                        if(fis.util.exists(conf)){
+                            root = cwd;
+                            break;
+                        } else {
+                            conf = false;
+                            pos = cwd.lastIndexOf('/');
+                        }
+                    } while(pos > 0);
+                }
             }
             
             //init project
