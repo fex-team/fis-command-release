@@ -240,7 +240,11 @@ exports.register = function(commander){
                 });
                 LRServer.on('livereload.js', function(req, res) {
                     var script = fis.util.fs.readFileSync(__dirname + '/vendor/livereload.js');
-                    res.writeHead(200, {'Content-Length': script.length, 'Content-Type': 'text/javascript'});
+                    res.writeHead(200, {
+                        'Content-Length': script.length,
+                        'Content-Type': 'text/javascript',
+                        'Connection': 'close'
+                    });
                     res.end(script);
                 });
                 LRServer.listen(function(err) {
@@ -250,6 +254,10 @@ exports.register = function(commander){
                     }
                 });
                 process.stdout.write('\n Ψ '.bold.yellow + port + '\n');
+                //fix mac livereload
+                process.on('uncaughtException', function (err) {
+                    if(err.message !== 'read ECONNRESET') throw  err;
+                });
                 //delete options.live;
             }
             
