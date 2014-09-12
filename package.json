@@ -1,7 +1,7 @@
 {
     "name" : "fis-command-release",
     "description" : "fis release command.",
-    "version" : "0.9.9",
+    "version" : "0.9.10",
     "author" : "FIS Team <fis@baidu.com>",
     "homepage" : "http://fis.baidu.com/",
     "keywords": [ "fis" ],
@@ -17,7 +17,7 @@
         "test" : "mocha test/ut --recursive"
     },
     "dependencies" : {
-        "chokidar" : "0.8.2",
+        "chokidar" : "0.8.4",
         "livereload-server-spec" : "0.2.3"
     },
     "devDependencies": {}

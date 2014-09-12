@@ -13,6 +13,7 @@ exports.register = function(commander){
         var root = fis.project.getProjectPath();
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
+        var ignored = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
         function listener(path){
             if(safePathReg.test(path)){
                 clearTimeout(timer);
@@ -23,7 +24,10 @@ exports.register = function(commander){
         }
         require('chokidar')
             .watch(root, {
-                ignored : /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i,
+                ignored : function(path){
+                    return ignored.test(path) ||
+                        fis.util.filter(path, fis.config.get('project.exclude'));
+                },
                 usePolling: false,
                 persistent: true
             })
