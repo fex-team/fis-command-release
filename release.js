@@ -77,6 +77,7 @@ exports.register = function(commander){
     
     var lastModified = {};
     var collection = {};
+    var total = {};
     var deploy = require('./lib/deploy.js');
     
     deploy.done = function(){
@@ -87,9 +88,10 @@ exports.register = function(commander){
     function release(opt){
         var flag, cost, start = Date.now();
         process.stdout.write('\n Ω '.green.bold);
-        opt.beforeEach = function(){
+        opt.beforeEach = function(file){
             flag = opt.verbose ? '' : '.';
             cost = (new Date).getTime();
+            total[file.subpath] = file;
         };
         opt.afterEach = function(file){
             //cal compile time
@@ -123,16 +125,22 @@ exports.register = function(commander){
                     (opt.verbose ? '' : ' ') +
                     (Date.now() - start + 'ms').bold.green + '\n'
                 );
-                for(var item in collection){
-                    if(collection.hasOwnProperty(item)){
-                        if(opt.unique){
-                            time(fis.compile.clean);
-                        }
-                        deploy(opt, collection);
-                        deploy(opt, ret.pkg);
-                        collection = {};
-                        return;
+                var changed = false;
+                fis.util.map(collection, function(key, file){
+                    //get newest file from src
+                    collection[key] = ret.src[key] || file;
+                    changed = true;
+                });
+                if (changed){
+                    if(opt.unique){
+                        time(fis.compile.clean);
                     }
+                    fis.util.merge(collection, ret.pkg)
+                    fis.util.merge(total, ret.pkg)
+                    deploy(opt, collection, total);
+                    collection = {};
+                    total = {};
+                    return;                    
                 }
             });
         } catch(e) {
