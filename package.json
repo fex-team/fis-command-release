@@ -1,24 +1,27 @@
 {
-    "name" : "fis-command-release",
-    "description" : "fis release command.",
-    "version" : "0.9.10",
-    "author" : "FIS Team <fis@baidu.com>",
-    "homepage" : "http://fis.baidu.com/",
-    "keywords": [ "fis" ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/fis-dev/fis-command-release.git"
-    },
-    "engines" : {
-        "node" : ">= 0.8.0"
-    },
-    "main" : "release.js",
-    "scripts" : {
-        "test" : "mocha test/ut --recursive"
-    },
-    "dependencies" : {
-        "chokidar" : "0.8.4",
-        "livereload-server-spec" : "0.2.3"
-    },
-    "devDependencies": {}
+  "name": "fis-command-release",
+  "description": "fis release command.",
+  "version": "0.10.0",
+  "author": "FIS Team <fis@baidu.com>",
+  "homepage": "http://fis.baidu.com/",
+  "keywords": [
+    "fis"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fis-dev/fis-command-release.git"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "main": "release.js",
+  "scripts": {
+    "test": "mocha test/ut --recursive"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "chokidar": "0.8.4",
+    "livereload-server-spec": "0.2.3"
+  },
+  "devDependencies": {}
 }
