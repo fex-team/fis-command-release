@@ -143,12 +143,14 @@ exports.register = function(commander){
                     if(opt.unique){
                         time(fis.compile.clean);
                     }
-                    fis.util.merge(collection, ret.pkg)
-                    fis.util.merge(total, ret.pkg)
+                    fis.util.map(ret.pkg, function(subpath, file){
+                        collection[subpath] = file;
+                        total[subpath] = file;
+                    });
                     deploy(opt, collection, total);
                     collection = {};
                     total = {};
-                    return;                    
+                    return;
                 }
             });
         } catch(e) {
