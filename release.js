@@ -14,13 +14,33 @@ exports.register = function(commander){
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
-        function listener(path){
-            if(safePathReg.test(path)){
-                clearTimeout(timer);
-                timer = setTimeout(function(){
-                    release(opt);
-                }, 500);
-            }
+        opt.srcCache = fis.project.getSource();
+        function listener(type){
+            return function (path) {
+                if(safePathReg.test(path)){
+                    var file = fis.file.wrap(path);
+                    if (type == 'add' || type == 'change') {
+                        if (!opt.srcCache[file.subpath]) {
+                            var file = fis.file(path);
+                            opt.srcCache[file.subpath] = file;
+                        }
+                    } else if (type == 'unlink') {
+                        if (opt.srcCache[file.subpath]) {
+                            delete opt.srcCache[file.subpath];
+                        }
+                    } else if (type == 'unlinkDir') {
+                         fis.util.map(opt.srcCache, function (subpath, file) {
+                            if (file.realpath.indexOf(path) !== -1) {
+                                delete opt.srcCache[subpath];
+                            }
+                        });                       
+                    }
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        release(opt);
+                    }, 500);
+                }
+            };
         }
 
         //添加usePolling配置
@@ -47,9 +67,10 @@ exports.register = function(commander){
                 usePolling: usePolling,
                 persistent: true
             })
-            .on('add', listener)
-            .on('change', listener)
-            .on('unlink', listener)
+            .on('add', listener('add'))
+            .on('change', listener('change'))
+            .on('unlink', listener('unlink'))
+            .on('unlinkDir', listener('unlinkDir'))
             .on('error', function(err){
                 //fis.log.error(err);
             });
