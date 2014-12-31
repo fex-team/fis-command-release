@@ -14,7 +14,7 @@ exports.register = function(commander){
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
-        opt.srcCache = {};
+        opt.srcCache = fis.project.getSource();
         function listener(type){
             return function (path) {
                 if(safePathReg.test(path)){
