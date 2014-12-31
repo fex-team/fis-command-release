@@ -15,30 +15,32 @@ exports.register = function(commander){
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
         opt.srcCache = {};
-        function listener(path){
-            if(safePathReg.test(path)){
-                var file = fis.file.wrap(path);
-                if (!opt.srcCache[file.subpath]) {
-                    var file = fis.file(path);
-                    opt.srcCache[file.subpath] = file;
+        function listener(type){
+            return function (path) {
+                if(safePathReg.test(path)){
+                    var file = fis.file.wrap(path);
+                    if (type == 'add' || type == 'change') {
+                        if (!opt.srcCache[file.subpath]) {
+                            var file = fis.file(path);
+                            opt.srcCache[file.subpath] = file;
+                        }
+                    } else if (type == 'unlink') {
+                        if (opt.srcCache[file.subpath]) {
+                            delete opt.srcCache[file.subpath];
+                        }
+                    } else if (type == 'unlinkDir') {
+                         fis.util.map(opt.srcCache, function (subpath, file) {
+                            if (file.realpath.indexOf(path) !== -1) {
+                                delete opt.srcCache[subpath];
+                            }
+                        });                       
+                    }
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        release(opt);
+                    }, 500);
                 }
-                clearTimeout(timer);
-                timer = setTimeout(function(){
-                    release(opt);
-                }, 500);
-            }
-        }
-
-        function unlink(path) {
-            fis.util.map(opt.srcCache, function (subpath, file) {
-                if (file.realpath.indexOf(path) !== -1) {
-                    delete opt.srcCache[subpath];
-                }
-            });
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                release(opt);
-            }, 500);
+            };
         }
 
         //添加usePolling配置
@@ -65,10 +67,10 @@ exports.register = function(commander){
                 usePolling: usePolling,
                 persistent: true
             })
-            .on('add', listener)
-            .on('change', listener)
-            .on('unlink', unlink)
-            .on('unlinkDir', unlink)
+            .on('add', listener('add'))
+            .on('change', listener('change'))
+            .on('unlink', listener('unlink'))
+            .on('unlinkDir', listener('unlinkDir'))
             .on('error', function(err){
                 //fis.log.error(err);
             });
