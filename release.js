@@ -14,13 +14,31 @@ exports.register = function(commander){
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
+        opt.srcCache = {};
         function listener(path){
             if(safePathReg.test(path)){
+                var file = fis.file.wrap(path);
+                if (!opt.srcCache[file.subpath]) {
+                    var file = fis.file(path);
+                    opt.srcCache[file.subpath] = file;
+                }
                 clearTimeout(timer);
                 timer = setTimeout(function(){
                     release(opt);
                 }, 500);
             }
+        }
+
+        function unlink(path) {
+            fis.util.map(opt.srcCache, function (subpath, file) {
+                if (file.realpath.indexOf(path) !== -1) {
+                    delete opt.srcCache[subpath];
+                }
+            });
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                release(opt);
+            }, 500);
         }
 
         //添加usePolling配置
@@ -49,7 +67,8 @@ exports.register = function(commander){
             })
             .on('add', listener)
             .on('change', listener)
-            .on('unlink', listener)
+            .on('unlink', unlink)
+            .on('unlinkDir', unlink)
             .on('error', function(err){
                 //fis.log.error(err);
             });
