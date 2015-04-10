@@ -43,13 +43,6 @@ exports.register = function(commander){
             };
         }
 
-        //添加usePolling配置
-        var usePolling = null;
-
-        if (typeof fis.config.get('project.watch.usePolling') !== 'undefined'){
-            usePolling = fis.config.get('project.watch.usePolling');
-        }
-
         require('chokidar')
             .watch(root, {
                 ignored : function(path){
@@ -64,7 +57,7 @@ exports.register = function(commander){
                     }
                     return ignored;
                 },
-                usePolling: usePolling,
+                usePolling: fis.config.get('project.watch.usePolling', null),
                 persistent: true
             })
             .on('add', listener('add'))
