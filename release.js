@@ -47,10 +47,6 @@ exports.register = function(commander){
             .watch(root, {
                 ignored : function(path){
                     var ignored = ignoredReg.test(path);
-                    if (fis.config.get('project.exclude')){
-                        ignored = ignored ||
-                            fis.util.filter(path, fis.config.get('project.exclude'));
-                    }
                     if (fis.config.get('project.watch.exclude')){
                         ignored = ignored ||
                             fis.util.filter(path, fis.config.get('project.watch.exclude'));
