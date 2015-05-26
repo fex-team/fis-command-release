@@ -100,7 +100,7 @@ exports.register = function(commander){
     
     deploy.done = function(){
         clearTimeout(LRTimer);
-        LRTimer = setTimeout(reload, 200);
+        LRTimer = setTimeout(reload, fis.config.get('livereload.delay', 200));
     };
     
     function release(opt){
