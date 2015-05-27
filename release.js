@@ -8,7 +8,7 @@
 exports.name = 'release';
 exports.desc = 'build and deploy your project';
 exports.register = function(commander){
-    
+
     function watch(opt){
         var root = fis.project.getProjectPath();
         var timer = -1;
@@ -33,7 +33,7 @@ exports.register = function(commander){
                             if (file.realpath.indexOf(path) !== -1) {
                                 delete opt.srcCache[subpath];
                             }
-                        });                       
+                        });
                     }
                     clearTimeout(timer);
                     timer = setTimeout(function(){
@@ -64,7 +64,7 @@ exports.register = function(commander){
                 //fis.log.error(err);
             });
     }
-    
+
     function time(fn){
         process.stdout.write('\n δ '.bold.yellow);
         var now = Date.now();
@@ -72,7 +72,7 @@ exports.register = function(commander){
         process.stdout.write((Date.now() - now + 'ms').green.bold);
         process.stdout.write('\n');
     }
-    
+
     var LRServer, LRTimer;
     function reload(){
         if(LRServer && LRServer.connections) {
@@ -92,17 +92,17 @@ exports.register = function(commander){
             });
         }
     }
-    
+
     var lastModified = {};
     var collection = {};
     var total = {};
     var deploy = require('./lib/deploy.js');
-    
+
     deploy.done = function(){
         clearTimeout(LRTimer);
         LRTimer = setTimeout(reload, fis.config.get('livereload.delay', 200));
     };
-    
+
     function release(opt){
         var flag, cost, start = Date.now();
         process.stdout.write('\n Ω '.green.bold);
@@ -130,12 +130,12 @@ exports.register = function(commander){
                 collection[file.subpath] = file;
             }
         };
-        
+
         opt.beforeCompile = function(file){
             collection[file.subpath] = file;
             process.stdout.write(flag);
         };
-        
+
         try {
             //release
             fis.release(opt, function(ret){
@@ -174,7 +174,7 @@ exports.register = function(commander){
             }
         }
     }
-    
+
     commander
         .option('-d, --dest <names>', 'release output destination', String, 'preview')
         .option('-m, --md5 [level]', 'md5 release option', Number)
@@ -191,11 +191,11 @@ exports.register = function(commander){
         .option('-u, --unique', 'use unique compile caching', Boolean, false)
         .option('--verbose', 'enable verbose output', Boolean, false)
         .action(function(){
-            
+
             var options = arguments[arguments.length - 1];
-            
+
             fis.log.throw = true;
-            
+
             //configure log
             if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
@@ -236,12 +236,12 @@ exports.register = function(commander){
                     } while(pos > 0);
                 }
             }
-            
+
             //init project
             fis.project.setProjectRoot(root);
-            
+
             process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
-            
+
             if(conf){
                 var cache = fis.cache(conf, 'conf');
                 if(!cache.revert()){
@@ -249,23 +249,24 @@ exports.register = function(commander){
                     cache.save();
                 }
                 require(conf);
+                fis.emitter.emit('fis-conf:loaded');
             } else {
                 fis.log.warning('missing config file [' + filename + ']');
             }
-            
+
             if(options.clean){
                 time(function(){
                     fis.cache.clean('compile');
                 });
             }
             delete options.clean;
-            
+
             //domain, fuck EventEmitter
             if(options.domains){
                 options.domain = true;
                 delete options.domains;
             }
-            
+
             if(options.live){
                 var LiveReloadServer = require('livereload-server-spec');
                 var port = fis.config.get('livereload.port', 8132);
@@ -300,7 +301,7 @@ exports.register = function(commander){
                 });
                 //delete options.live;
             }
-            
+
             switch (typeof options.md5){
                 case 'undefined':
                     options.md5 = 0;
@@ -313,7 +314,7 @@ exports.register = function(commander){
             }
             //md5 > 0, force release hash file
             options.hash = options.md5 > 0;
-            
+
             if(options.watch){
                 watch(options);
             } else {
