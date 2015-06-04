@@ -22,7 +22,8 @@ exports.register = function(commander){
                     if (type == 'add' || type == 'change') {
                         if (!opt.srcCache[file.subpath]) {
                             var file = fis.file(path);
-                            opt.srcCache[file.subpath] = file;
+                            if (file.release)
+                                opt.srcCache[file.subpath] = file;
                         }
                     } else if (type == 'unlink') {
                         if (opt.srcCache[file.subpath]) {
