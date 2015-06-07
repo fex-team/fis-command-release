@@ -65,8 +65,9 @@ exports.register = function(commander){
             .on('change', listener('change'))
             .on('unlink', listener('unlink'))
             .on('unlinkDir', listener('unlinkDir'))
-            .on('error', function(err){
-                //fis.log.error(err);
+            .on('error', function(err) {
+                err.message += fis.cli.colors.red('\n\tYou can set `fis.config.set("project.watch.usePolling", true)` fix it.');
+                fis.log.error(err);
             });
     }
 
