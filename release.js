@@ -19,19 +19,9 @@ exports.register = function(commander){
             return function (path) {
                 if(safePathReg.test(path)){
                     var file = fis.file.wrap(path);
-                    var exclude = fis.config.get('project.watch.exclude');
                     if (type == 'add' || type == 'change') {
-                        if (!opt.srcCache[file.subpath]) {
-                            var file = fis.file(path);
-                            if (file.release) {
-                                if (exclude) {
-                                    if (!fis.util.filter(path, exclude)) {
-                                        opt.srcCache[file.subpath] = file;
-                                    }
-                                } else {
-                                    opt.srcCache[file.subpath] = file;
-                                }
-                            }
+                        if (!opt.srcCache[file.subpath] && file.release) {
+                            opt.srcCache[file.subpath] = file;
                         }
                     } else if (type == 'unlink') {
                         if (opt.srcCache[file.subpath]) {
@@ -54,12 +44,18 @@ exports.register = function(commander){
 
         require('chokidar')
             .watch(root, {
-                ignored : function(path){
-                    var ignored = ignoredReg.test(path);
+                ignored : function(path) {
+
+                    var adjustPath = fis.util(path).replace(fis.project.getProjectPath(), '');
+                    if (adjustPath == '') return false; // if path == project.root
+                    if (adjustPath[0] != '/') adjustPath = '/' + adjustPath;
+
+                    var ignored = ignoredReg.test(adjustPath);
                     if (fis.config.get('project.watch.exclude')){
                         ignored = ignored ||
-                            fis.util.filter(path, fis.config.get('project.watch.exclude'));
+                            fis.util.filter(adjustPath, fis.config.get('project.watch.exclude'));
                     }
+
                     return ignored;
                 },
                 usePolling: fis.config.get('project.watch.usePolling', null),
