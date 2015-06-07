@@ -19,11 +19,19 @@ exports.register = function(commander){
             return function (path) {
                 if(safePathReg.test(path)){
                     var file = fis.file.wrap(path);
+                    var exclude = fis.config.get('project.watch.exclude');
                     if (type == 'add' || type == 'change') {
                         if (!opt.srcCache[file.subpath]) {
                             var file = fis.file(path);
-                            if (file.release)
-                                opt.srcCache[file.subpath] = file;
+                            if (file.release) {
+                                if (exclude) {
+                                    if (!fis.util.filter(path, exclude)) {
+                                        opt.srcCache[file.subpath] = file;
+                                    }
+                                } else {
+                                    opt.srcCache[file.subpath] = file;
+                                }
+                            }
                         }
                     } else if (type == 'unlink') {
                         if (opt.srcCache[file.subpath]) {
