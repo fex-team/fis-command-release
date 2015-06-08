@@ -17,7 +17,6 @@ exports.register = function(commander){
         opt.srcCache = fis.project.getSource();
         // first compile
         release(opt);
-        var killReCompile = true;
         function listener(type){
             return function (path) {
                 if(safePathReg.test(path)){
@@ -39,10 +38,7 @@ exports.register = function(commander){
                     }
                     clearTimeout(timer);
                     timer = setTimeout(function(){
-                        if (!killReCompile) {
-                            release(opt);
-                        }
-                        killReCompile = false;
+                        release(opt);
                     }, 500);
                 }
             };
@@ -73,7 +69,8 @@ exports.register = function(commander){
                     return ignored;
                 },
                 usePolling: fis.config.get('project.watch.usePolling', null),
-                persistent: true
+                persistent: true,
+                ignoreInitial: true
             })
             .on('add', listener('add'))
             .on('change', listener('change'))
