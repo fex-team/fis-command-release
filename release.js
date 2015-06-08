@@ -15,6 +15,9 @@ exports.register = function(commander){
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
         opt.srcCache = fis.project.getSource();
+        // first compile
+        release(opt);
+        var killReCompile = true;
         function listener(type){
             return function (path) {
                 if(safePathReg.test(path)){
@@ -36,7 +39,10 @@ exports.register = function(commander){
                     }
                     clearTimeout(timer);
                     timer = setTimeout(function(){
-                        release(opt);
+                        if (!killReCompile) {
+                            release(opt);
+                        }
+                        killReCompile = false;
                     }, 500);
                 }
             };
@@ -45,16 +51,23 @@ exports.register = function(commander){
         require('chokidar')
             .watch(root, {
                 ignored : function(path) {
-
                     var adjustPath = fis.util(path).replace(fis.project.getProjectPath(), '');
                     if (adjustPath == '') return false; // if path == project.root
+                    // first chokidar emit add event
                     if (adjustPath[0] != '/') adjustPath = '/' + adjustPath;
 
+                    var include = fis.config.get('project.include');
+                    var exclude = fis.config.get('project.exclude');
+
+                    if (!fis.util.filter(adjustPath, include, exclude)) {
+                        return true;
+                    }
+
                     var ignored = ignoredReg.test(adjustPath);
+
                     if (fis.config.get('project.watch.exclude')){
                         ignored = ignored ||
-                            fis.util.filter(adjustPath, fis.config.get('project.watch.exclude')) ||
-                            fis.util.filter(adjustPath, fis.config.get('project.exclude'));
+                            fis.util.filter(adjustPath, fis.config.get('project.watch.exclude'));
                     }
 
                     return ignored;
