@@ -53,7 +53,8 @@ exports.register = function(commander){
                     var ignored = ignoredReg.test(adjustPath);
                     if (fis.config.get('project.watch.exclude')){
                         ignored = ignored ||
-                            fis.util.filter(adjustPath, fis.config.get('project.watch.exclude'));
+                            fis.util.filter(adjustPath, fis.config.get('project.watch.exclude')) ||
+                            fis.util.filter(adjustPath, fis.config.get('project.exclude'));
                     }
 
                     return ignored;
