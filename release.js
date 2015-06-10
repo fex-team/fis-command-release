@@ -14,30 +14,39 @@ exports.register = function(commander){
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
-        opt.srcCache = fis.project.getSource();
+        
+        // init cache
+        var files = fis.project.getSource();
+        fis.util.map(files, function (subpath, file) {
+            opt.srcCache = opt.srcCache || [];
+            opt.srcCache.push(file.realpath);
+        });
+
         // first compile
         release(opt);
+        
         function listener(type){
             return function (path) {
+                var p;
                 if(safePathReg.test(path)){
-                    var file = fis.file.wrap(path);
+                    var path = fis.util(path);
                     if (type == 'add' || type == 'change') {
-                        if (!opt.srcCache[file.subpath] && file.release) {
-                            opt.srcCache[file.subpath] = file;
+                        if (opt.srcCache.indexOf(path) == -1) {
+                            opt.srcCache.push(path);
                         }
                     } else if (type == 'unlink') {
-                        if (opt.srcCache[file.subpath]) {
-                            delete opt.srcCache[file.subpath];
+                        if ((p = opt.srcCache.indexOf(path)) > -1) {
+                            opt.srcCache.splice(p, 1);
                         }
                     } else if (type == 'unlinkDir') {
-                         fis.util.map(opt.srcCache, function (subpath, file) {
-                            if (file.realpath.indexOf(path) !== -1) {
-                                delete opt.srcCache[subpath];
+                        opt.srcCache.forEach(function (realpath) {
+                            if ((p = realpath.indexOf(path)) > -1) {
+                                opt.srcCache.splice(p, 1);
                             }
                         });
                     }
                     clearTimeout(timer);
-                    timer = setTimeout(function(){
+                    timer = setTimeout(function() {
                         release(opt);
                     }, 500);
                 }
