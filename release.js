@@ -39,10 +39,14 @@ exports.register = function(commander){
                             opt.srcCache.splice(p, 1);
                         }
                     } else if (type == 'unlinkDir') {
-                        opt.srcCache.forEach(function (realpath) {
-                            if ((p = realpath.indexOf(path)) > -1) {
-                                opt.srcCache.splice(p, 1);
-                            }
+                        var toDelete = [];
+
+                        opt.srcCache.forEach(function(realpath, index) {
+                            realpath.indexOf(path) === 0 && toDelete.unshift(index);
+                        });
+
+                        toDelete.forEach(function(index) {
+                            opt.srcCache.splice(index, 1);
                         });
                     }
                     clearTimeout(timer);
