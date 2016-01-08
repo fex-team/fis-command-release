@@ -230,7 +230,7 @@ exports.register = function(commander){
             if(options.verbose){
                 fis.log.level = fis.log.L_ALL;
             }
-            var root, conf, filename = 'fis-conf.js';
+            var root, conf, filename = 'fis-conf.js', baseConf, baseFilename = "base-fisconf.js";
             if(options.file){
                 if(fis.util.isFile(options.file)){
                     conf = fis.util.realpath(options.file);
@@ -278,6 +278,13 @@ exports.register = function(commander){
                     options.clean = true;
                     cache.save();
                 }
+
+                //base fis config
+                baseConf = fis.util.realpath(root + "/../" + baseFilename);
+                if(fis.util.exists(baseConf) && fis.util.isFile(baseConf)){
+                    require(baseConf);
+                }
+
                 require(conf);
                 fis.emitter.emit('fis-conf:loaded');
             } else {
