@@ -270,7 +270,7 @@ exports.register = function(commander){
             //init project
             fis.project.setProjectRoot(root);
 
-            process.title = 'fis ' + process.argv.splice(2).join(' ') + ' [ ' + root + ' ]';
+            process.title = 'fis ' + process.argv.slice(2).join(' ') + ' [ ' + root + ' ]';
 
             if(conf){
                 var cache = fis.cache(conf, 'conf');
