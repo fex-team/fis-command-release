@@ -14,7 +14,7 @@ exports.register = function(commander){
         var timer = -1;
         var safePathReg = /[\\\/][_\-.\s\w]+$/i;
         var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
-        
+
         // init cache
         var files = fis.project.getSource();
         fis.util.map(files, function (subpath, file) {
@@ -24,7 +24,7 @@ exports.register = function(commander){
 
         // first compile
         release(opt);
-        
+
         function listener(type){
             return function (path) {
                 var p;
@@ -298,6 +298,14 @@ exports.register = function(commander){
             }
 
             if(options.live){
+
+                if (!process.hasOwnProperty("EventEmitter")) {
+                    // EventEmitter 在 node v7 时被移除，
+                    // websocket.io-spec 模块使用时会报 `Cannot read property 'prototype' of undefined` 错误
+                    // 在 websocket.io-spec 模块未解决问题前挂载一个同名对象解决
+                    process.EventEmitter = require("events");
+                }
+
                 var LiveReloadServer = require('livereload-server-spec');
                 var port = fis.config.get('livereload.port', 8132);
                 LRServer = new LiveReloadServer({
