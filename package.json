@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "async": "0.9.0",
-    "chokidar": "1.4.3",
+    "chokidar": "1.7.0",
     "livereload-server-spec": "0.2.3"
   },
   "devDependencies": {}
