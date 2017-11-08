@@ -1,5 +1,9 @@
 <?php
 
+// ！！！！ 注意 ！！！！
+// 此代码存在很大的安全隐患，请不要部署到线上服务。
+// 百度内部请使用：http://agroup.baidu.com/fis/md/article/196978
+
 @error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 
 function mkdirs($path, $mod = 0777) {
