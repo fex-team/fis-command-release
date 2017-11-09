@@ -20,3 +20,9 @@
         -p, --pack          with package
         -u, --unique        use unique compile caching
         --verbose           enable verbose output
+        
+## 关于文件接收器 receiver.php
+
+**此代码存在很大的安全隐患，没有做任何安全考虑，请不要部署到线上服务。**
+
+百度内部请使用：http://agroup.baidu.com/fis/md/article/196978
